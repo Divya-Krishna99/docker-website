@@ -4,6 +4,8 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'mydockerimage'
         DOCKER_CONTAINER = 'mydockercontainer'
+        HOST_PORT = '8081'  // Configurable port to avoid conflict
+        CONTAINER_PORT = '80'  // Port inside the container
     }
 
     stages {
@@ -25,10 +27,11 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    sh '''
-                    docker rm -f $DOCKER_CONTAINER || true
-                    docker run -d --name $DOCKER_CONTAINER -p 8080:80 $DOCKER_IMAGE
-                    '''
+                    // Remove the container if it exists
+                    sh 'docker rm -f $DOCKER_CONTAINER || true'
+                    
+                    // Run the container on a configurable port
+                    sh "docker run -d --name $DOCKER_CONTAINER -p $HOST_PORT:$CONTAINER_PORT $DOCKER_IMAGE"
                 }
             }
         }
