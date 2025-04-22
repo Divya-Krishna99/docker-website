@@ -5,7 +5,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/your-username/docker-website.git'
+                git 'https://github.com/Divya-Krishna99/docker-website'
             }
         }
 
