@@ -1,24 +1,35 @@
-// Jenkinsfile
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = 'mydockerimage'
+        DOCKER_CONTAINER = 'mydockercontainer'
+    }
+
     stages {
-        stage('Clone Repository') {
+        stage('Checkout Code') {
             steps {
-                git 'https://github.com/Divya-Krishna99/docker-website'
+                // Uses the repository already configured in Jenkins
+                checkout scm
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t my-jenkins-website .'
+                script {
+                    sh 'docker build -t $DOCKER_IMAGE .'
+                }
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                sh 'docker rm -f jenkins-website || true'
-                sh 'docker run -d --name jenkins-website -p 8081:80 my-jenkins-website'
+                script {
+                    sh '''
+                    docker rm -f $DOCKER_CONTAINER || true
+                    docker run -d --name $DOCKER_CONTAINER -p 8080:80 $DOCKER_IMAGE
+                    '''
+                }
             }
         }
     }
